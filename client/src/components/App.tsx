@@ -4,6 +4,7 @@ import { Login } from './Login';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import { Dashboard } from 'components/Dashboard';
 import { ContactsProvider } from 'contexts/ContactsProvider';
+import { ConversationsProvider } from 'contexts/ConversationsProvider';
 
 const PREFIX = 'iMessenger-';
 
@@ -11,7 +12,11 @@ function App() {
   const [id, setId] = useLocalStorage(PREFIX, null);
 
   return (
-    <ContactsProvider>{id ? <Dashboard id={id} /> : <Login setId={setId} />}</ContactsProvider>
+    <ContactsProvider>
+      <ConversationsProvider>
+        {id ? <Dashboard id={id} /> : <Login setId={setId} />}
+      </ConversationsProvider>
+    </ContactsProvider>
   );
 }
 

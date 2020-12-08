@@ -8,11 +8,14 @@ type Props = { closeModal: () => void };
 export const NewContactModal: FunctionComponent<Props> = ({ closeModal }) => {
   const idRef = useRef(null);
   const nameRef = useRef(null);
-  const { createContact } = useContacts();
+  const { contacts, setContacts } = useContacts();
+
+  const createContact = (id, name) => {
+    setContacts([...contacts, { id, name }]);
+  };
 
   function handleSubmit(e) {
     e.preventDefault();
-
     createContact(idRef.current.value, nameRef.current.value);
     closeModal();
   }

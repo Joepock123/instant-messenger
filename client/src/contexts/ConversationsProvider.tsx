@@ -1,69 +1,58 @@
 import { useLocalStorage } from 'hooks/useLocalStorage';
-import React, { useContext, createContext } from 'react';
+import React, { useContext, createContext, useState } from 'react';
+import { IConversation } from 'types';
 import { useContacts } from './ContactsProvider';
 
-type IConversation = {
-  selected: boolean;
-  recipients: Array<IRecipient>;
-};
-
-type IRecipient = {
-  name: string;
-};
-
 type IConversationsContext = {
-  conversations?: Array<IConversation>;
-  createConversation: (recipients: Array<IRecipient>) => void;
+  conversations: Array<IConversation>;
+  setConversations?: any;
+  selectedConversationId: string;
+  setSelectedConversationId?: any;
 };
 
 const ConversationsContext = createContext<IConversationsContext>({
   conversations: [],
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  createConversation: () => {},
+  setConversations: undefined,
+  selectedConversationId: 'abc',
+  setSelectedConversationId: undefined,
 });
 
 export const useConversations = () => {
-  return useContext<IConversationsContext>(ConversationsContext);
+  return useContext<IConversationsContext | undefined>(ConversationsContext);
 };
 
-export const ConversationsProvider = ({ id, children }) => {
+export const ConversationsProvider = ({ children }) => {
   const [conversations, setConversations] = useLocalStorage('conversations', []);
-  // const [selectedConversationIndex, setSelectedConversationIndex] = useState(0);
+  const [selectedConversationId, setSelectedConversationId] = useState('');
   const { contacts } = useContacts();
   // const socket = useSocket();
 
-  const createConversation = (recipients) => {
-    setConversations((prevConversations) => {
-      return [...prevConversations, { recipients, messages: [] }];
+  const formattedConversations = conversations.map((conversation, index) => {
+    const recipients = conversation.recipients.map((recipientId) => {
+      const contact = contacts.find((contact) => contact.id === recipientId);
+      const name = contact?.name || recipientId;
+      return { id: recipientId, name };
     });
-  };
 
-  // const formattedConversations = conversations.map((conversation, index) => {
-  //   const recipients = conversation.recipients.map((recipient) => {
-  //     const contact = contacts.find((contact) => {
-  //       return contact.id === recipient;
-  //     });
-  //     const name = (contact && contact.name) || recipient;
-  //     return { id: recipient, name };
-  //   });
+    // const messages = conversation.messages.map((message) => {
+    //   const contact = contacts.find((contact) => {
+    //     return contact.id === message.sender;
+    //   });
+    //   const name = (contact && contact.name) || message.sender;
+    //   const fromMe = id === message.sender;
+    //   return { ...message, senderName: name, fromMe };
+    // });
 
-  //   const messages = conversation.messages.map((message) => {
-  //     const contact = contacts.find((contact) => {
-  //       return contact.id === message.sender;
-  //     });
-  //     const name = (contact && contact.name) || message.sender;
-  //     const fromMe = id === message.sender;
-  //     return { ...message, senderName: name, fromMe };
-  //   });
-
-  //   const selected = index === selectedConversationIndex;
-  //   return { ...conversation, messages, recipients, selected };
-  // });
+    // const selected = index === selectedConversationIndex;
+    return { ...conversation, recipients };
+    // return { ...conversation, messages, recipients, selected };
+  });
 
   const value = {
-    conversations,
-    // conversations: formattedConversations,
-    createConversation,
+    conversations: formattedConversations,
+    setConversations,
+    selectedConversationId: selectedConversationId,
+    setSelectedConversationId: setSelectedConversationId,
   };
 
   return <ConversationsContext.Provider value={value}>{children}</ConversationsContext.Provider>;

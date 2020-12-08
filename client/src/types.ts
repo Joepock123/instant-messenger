@@ -1,8 +1,10 @@
 export type IConversation = {
-  selected: boolean;
-  recipients: Array<IRecipient>;
+  conversationId: string;
+  text: string;
+  recipients: Array<IContact>;
 };
 
-export type IRecipient = {
+export type IContact = {
   name: string;
+  id: string;
 };

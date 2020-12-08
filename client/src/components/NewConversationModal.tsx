@@ -1,5 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
+import { v4 as uuidV4 } from 'uuid';
+
 import { useContacts } from 'contexts/ContactsProvider';
 import { useConversations } from 'contexts/ConversationsProvider';
 
@@ -8,11 +10,20 @@ type Props = { closeModal: () => void };
 export const NewConversationModal: FunctionComponent<Props> = ({ closeModal }) => {
   const [selectedContactIds, setSelectedContactIds] = useState([]);
   const { contacts } = useContacts();
-  const { createConversation } = useConversations();
+
+  // @ts-ignore
+  const { conversations, setConversations } = useConversations();
+
+  const createConversation = (selectedContactIds) => {
+    const conversationId = uuidV4();
+    setConversations([
+      ...conversations,
+      { conversationId: conversationId, recipients: selectedContactIds, messages: [] },
+    ]);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     createConversation(selectedContactIds);
     closeModal();
   };
@@ -45,7 +56,9 @@ export const NewConversationModal: FunctionComponent<Props> = ({ closeModal }) =
               />
             </Form.Group>
           ))}
-          <Button type="submit">Create</Button>
+          <Button type="submit" disabled={selectedContactIds.length === 0}>
+            Create
+          </Button>
         </Form>
       </Modal.Body>
     </>
