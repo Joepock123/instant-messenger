@@ -25,9 +25,8 @@ export const ConversationsProvider = ({ children }) => {
   const [conversations, setConversations] = useLocalStorage('conversations', []);
   const [selectedConversationId, setSelectedConversationId] = useState('');
   const { contacts } = useContacts();
-  // const socket = useSocket();
 
-  const formattedConversations = conversations.map((conversation, index) => {
+  const formattedConversations = conversations.map((conversation) => {
     const recipients = conversation.recipients.map((recipientId) => {
       const contact = contacts.find((contact) => contact.id === recipientId);
       const name = contact?.name || recipientId;

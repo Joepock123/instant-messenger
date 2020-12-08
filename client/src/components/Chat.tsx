@@ -8,22 +8,31 @@ export const Chat: FunctionComponent<{ id: string; selectedConversationId: strin
   id,
 }) => {
   const [text, setText] = useState('');
-  const { conversations } = useConversations();
+  const { conversations, setConversations } = useConversations();
   const selectedConversation = conversations.find(
     (conversation) => conversation.conversationId === selectedConversationId,
   );
-  console.log('selectedConversation', selectedConversation);
+  const recipientIds = selectedConversation?.recipients?.map((recipient) => recipient.id);
 
-  const conversationRecipientIds =
-    selectedConversation?.recipients.map((recipient) => recipient.id) || [];
+  const addMessageToConversation = ({ selectedConversationId, text, id }) => {
+    const newConversation = {
+      ...selectedConversation,
+      messages: [...selectedConversation?.messages, { sender: id, text }],
+      // This is nasty and needs to be done because of the formatting in the provider
+      recipients: recipientIds,
+    };
+    // Need to remove the old conversation
+    const filteredConversations = conversations.filter(
+      (conversation) => conversation.conversationId !== selectedConversationId,
+    );
+    const updatedConversations = [...filteredConversations, newConversation];
 
-  const addMessageToConversation = ({ conversationRecipientIds, text, id }) => {
-    return true;
+    setConversations(updatedConversations);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addMessageToConversation({ conversationRecipientIds, text, id });
+    addMessageToConversation({ selectedConversationId, text, id });
     setText('');
   };
 
@@ -56,7 +65,7 @@ export const Chat: FunctionComponent<{ id: string; selectedConversationId: strin
           })} */}
         </div>
       </div>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Form.Group className="m-2">
           <InputGroup>
             <Form.Control

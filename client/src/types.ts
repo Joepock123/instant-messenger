@@ -1,6 +1,6 @@
 export type IConversation = {
   conversationId: string;
-  text: string;
+  messages: Array<any>;
   recipients: Array<IContact>;
 };
 
