@@ -12,6 +12,7 @@ export const Conversations: FunctionComponent<{}> = () => {
     selectedConversationId,
     setSelectedConversationId,
   } = useConversations();
+  console.log('conversations', conversations);
 
   const handleDeleteConversation = (conversationId) => {
     const updatedConversations = conversations.filter(

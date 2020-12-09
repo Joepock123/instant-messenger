@@ -24,34 +24,9 @@ export const useConversations = () => {
 export const ConversationsProvider = ({ children, id }) => {
   const [conversations, setConversations] = useLocalStorage('conversations', []);
   const [selectedConversationId, setSelectedConversationId] = useState('');
-  const { contacts } = useContacts();
-
-  const formattedConversations = conversations.map((conversation) => {
-    const recipients = conversation.recipients.map((recipientId) => {
-      // Check to see if already formatted
-      if (recipientId.name) return { ...recipientId };
-      const contact = contacts.find((contact) => contact.id === recipientId);
-      const name = contact?.name || recipientId;
-      return { id: recipientId, name };
-    });
-
-    const messages = conversation.messages.map((message) => {
-      // Check to see if already formatted
-      if (message.senderName) return { ...message };
-      const contact = contacts.find((contact) => {
-        return contact.id === message.senderId;
-      });
-      const name = (contact && contact.name) || message.senderId;
-      return { ...message, senderName: name };
-    });
-
-    // const selected = index === selectedConversationIndex;
-    return { ...conversation, recipients, messages };
-    // return { ...conversation, messages, recipients, selected };
-  });
 
   const value = {
-    conversations: formattedConversations,
+    conversations,
     setConversations,
     selectedConversationId: selectedConversationId,
     setSelectedConversationId: setSelectedConversationId,

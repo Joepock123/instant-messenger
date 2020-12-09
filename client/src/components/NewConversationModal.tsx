@@ -14,11 +14,19 @@ export const NewConversationModal: FunctionComponent<Props> = ({ closeModal }) =
   // @ts-ignore
   const { conversations, setConversations } = useConversations();
 
+  const createRecipientsList = (selectedContactIds) => {
+    return selectedContactIds.map((selectedContactId) =>
+      contacts.find((contact) => contact.id === selectedContactId),
+    );
+  };
+
   const createConversation = (selectedContactIds) => {
+    const recipientsList = createRecipientsList(selectedContactIds);
     const conversationId = uuidV4();
+
     setConversations([
       ...conversations,
-      { conversationId: conversationId, recipients: selectedContactIds, messages: [] },
+      { conversationId: conversationId, recipients: recipientsList, messages: [] },
     ]);
   };
 

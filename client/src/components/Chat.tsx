@@ -34,9 +34,13 @@ export const Chat: FunctionComponent<{ id: string; selectedConversationId: strin
     setConversations(updatedConversations);
   };
 
+  const handleSendMessage = ({ selectedConversationId, text, id }) => {
+    addMessageToConversation({ selectedConversationId, text, id });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    addMessageToConversation({ selectedConversationId, text, id });
+    handleSendMessage({ selectedConversationId, text, id });
     setText('');
   };
 
