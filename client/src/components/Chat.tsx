@@ -12,14 +12,13 @@ export const Chat: FunctionComponent<{ id: string; selectedConversationId: strin
   const selectedConversation = conversations.find(
     (conversation) => conversation.conversationId === selectedConversationId,
   );
-  const recipientIds = selectedConversation?.recipients?.map((recipient) => recipient.id);
+  console.log('selectedConversation', selectedConversation);
+  // const recipientIds = selectedConversation?.recipients?.map((recipient) => recipient.id);
 
   const addMessageToConversation = ({ selectedConversationId, text, id }) => {
     const newConversation = {
       ...selectedConversation,
-      messages: [...selectedConversation?.messages, { sender: id, text }],
-      // This is nasty and needs to be done because of the formatting in the provider
-      recipients: recipientIds,
+      messages: [...selectedConversation?.messages, { senderId: id, text }],
     };
     // Need to remove the old conversation
     const filteredConversations = conversations.filter(

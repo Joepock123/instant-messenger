@@ -1,20 +1,24 @@
 import React, { FunctionComponent, useState } from 'react';
-import { ListGroup } from 'react-bootstrap';
+import { Button, ListGroup } from 'react-bootstrap';
 import { useConversations } from 'contexts/ConversationsProvider';
 import { useContacts } from 'contexts/ContactsProvider';
 import { IContact } from 'types';
 
 export const Conversations: FunctionComponent<{}> = () => {
   const { contacts } = useContacts();
-  const { conversations, selectedConversationId, setSelectedConversationId } = useConversations();
+  const {
+    conversations,
+    setConversations,
+    selectedConversationId,
+    setSelectedConversationId,
+  } = useConversations();
 
-  // This would usually happen on the backend
-  // const decoratedConversations = conversations.map((conversation) => {
-  //   const recipients: Array<IContact> = conversation.recipients.map((recipientId) => {
-  //     return contacts.find((contact) => contact.id === recipientId);
-  //   });
-  //   return { ...conversation, recipients };
-  // });
+  const handleDeleteConversation = (conversationId) => {
+    const updatedConversations = conversations.filter(
+      (conversation) => conversation.conversationId !== conversationId,
+    );
+    setConversations(updatedConversations);
+  };
 
   return (
     <ListGroup variant="flush">
@@ -26,6 +30,9 @@ export const Conversations: FunctionComponent<{}> = () => {
           active={conversation.conversationId === selectedConversationId}
         >
           {conversation.recipients.map((r) => r.name).join(', ')}
+          <Button onClick={() => handleDeleteConversation(conversation.conversationId)}>
+            Delete
+          </Button>
         </ListGroup.Item>
       ))}
     </ListGroup>
