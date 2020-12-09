@@ -59,3 +59,14 @@ export const ConversationsProvider = ({ children, id }) => {
 
   return <ConversationsContext.Provider value={value}>{children}</ConversationsContext.Provider>;
 };
+
+// useEffect(() => {
+//   if (socket == null) return;
+
+//   // Think this creates a listener and when recieves it fires callback.
+//   // We don't want to create lots of listeners every time component renders
+//   socket.on('receive-message', addMessageToConversation);
+
+//   return () => socket.off('receive-message');
+//   // Without useCallback this function will change everytime we re-render our component
+// }, [socket, addMessageToConversation]);

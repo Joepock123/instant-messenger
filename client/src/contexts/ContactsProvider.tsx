@@ -1,6 +1,5 @@
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import React, { useContext, createContext } from 'react';
-// import useLocalStorage from '../hooks/useLocalStorage';
 
 const ContactsContext = createContext({ contacts: [], setContacts: undefined });
 
