@@ -14,6 +14,7 @@ type IConversationsContext = {
   createConversation: (selectedContactIds: Array<any>) => void;
   sendMessage: ({}) => void;
   getConversation: (string) => IConversation;
+  deleteConversation: (string) => void;
 };
 
 const ConversationsContext = createContext<IConversationsContext>({
@@ -24,6 +25,7 @@ const ConversationsContext = createContext<IConversationsContext>({
   createConversation: undefined,
   sendMessage: undefined,
   getConversation: undefined,
+  deleteConversation: undefined,
 });
 
 export const useConversations = () => {
@@ -40,8 +42,28 @@ export const ConversationsProvider = ({ children, id }) => {
     const conversationId = uuidV4();
     setConversations([
       ...conversations,
-      { conversationId: conversationId, recipients, messages: [] },
+      { conversationId: conversationId, recipients: recipients, messages: [] },
     ]);
+    console.log('CONVO CREATED');
+  };
+
+  const deleteConversation = (conversationId) => {
+    const updatedConversations = conversations.filter(
+      (conversation) => conversation.conversationId !== conversationId,
+    );
+    setConversations(updatedConversations);
+  };
+
+  const createConversationWithMessage = (selectedConversationId, recipients, senderId, text) => {
+    setConversations([
+      ...conversations,
+      {
+        conversationId: selectedConversationId,
+        recipients: recipients,
+        messages: [{ senderId, text }],
+      },
+    ]);
+    console.log('CONVO WITH MESSAGE AND EXISITNG CONVOID CREATED');
   };
 
   const getConversation = (conversationId) => {
@@ -78,7 +100,7 @@ export const ConversationsProvider = ({ children, id }) => {
       setConversations(updatedConversations);
     } else {
       console.log('CONVERSATION DOES NOT EXIST. Creating new conversation.');
-      createConversation(recipients);
+      createConversationWithMessage(selectedConversationId, recipients, senderId, text);
     }
   };
 
@@ -101,14 +123,16 @@ export const ConversationsProvider = ({ children, id }) => {
   useEffect(() => {
     if (socket == null) return;
     console.log('Now listening for received messages');
+    // Think this creates a listener and when recieves it fires callback.
+    // We don't want to create lots of listeners every time component renders
     socket.on('receive-message', (message) => {
-      console.log(message);
+      console.log('Received messge', message);
+      addMessageToConversation(message);
     });
-    // socket.on('receive-message', addMessageToConversation);
     return () => socket.off('receive-message');
   }, [socket, addMessageToConversation]);
 
-  const formattedConversations = conversations.map((conversation, index) => {
+  const formattedConversations = conversations.map((conversation) => {
     const recipients = conversation?.recipients?.map((recipientId) => {
       const contact = contacts.find((contact) => {
         return contact.id === recipientId;
@@ -137,6 +161,7 @@ export const ConversationsProvider = ({ children, id }) => {
     createConversation,
     sendMessage,
     getConversation,
+    deleteConversation,
   };
 
   return <ConversationsContext.Provider value={value}>{children}</ConversationsContext.Provider>;
