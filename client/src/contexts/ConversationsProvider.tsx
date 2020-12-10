@@ -83,10 +83,14 @@ export const ConversationsProvider = ({ children, id }) => {
   };
 
   const sendMessage = ({ selectedConversationId, text, senderId }) => {
-    // const recipientIdsList = selectedConversation.recipients.map((recipient) => recipient.id);
-    // console.log('sendMessage -> recipientIdsList', recipientIdsList);
-    // socket.emit('send-message', { text, recipients: recipientIdsList, selectedConversationId });
-
+    const conversation = getConversation(selectedConversationId);
+    // Send message to recipients
+    socket.emit('sent-message', {
+      text,
+      recipients: conversation.recipients,
+      selectedConversationId,
+    });
+    // Add message locally
     addMessageToConversation({
       selectedConversationId,
       text,
@@ -97,7 +101,10 @@ export const ConversationsProvider = ({ children, id }) => {
   useEffect(() => {
     if (socket == null) return;
     console.log('Now listening for received messages');
-    socket.on('receive-message', addMessageToConversation);
+    socket.on('receive-message', (message) => {
+      console.log(message);
+    });
+    // socket.on('receive-message', addMessageToConversation);
     return () => socket.off('receive-message');
   }, [socket, addMessageToConversation]);
 

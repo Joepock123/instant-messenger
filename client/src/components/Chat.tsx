@@ -8,14 +8,16 @@ export const Chat: FunctionComponent<{ id: string; selectedConversationId: strin
   id,
 }) => {
   const [text, setText] = useState('');
-  const { sendMessage, getConversation } = useConversations();
+  const { conversations, sendMessage, getConversation } = useConversations();
   const setRef = useCallback((node) => {
     if (node) {
       node.scrollIntoView({ smooth: true });
     }
   }, []);
 
-  const selectedConversation = getConversation(selectedConversationId);
+  const selectedConversation = conversations.find(
+    (conversation) => conversation.conversationId === selectedConversationId,
+  );
   console.log('selectedConversation', selectedConversation);
 
   const handleSubmit = (e) => {
