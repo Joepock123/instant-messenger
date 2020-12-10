@@ -16,13 +16,14 @@ export const useSocket = () => {
 export const SocketProvider = ({ children, id }) => {
   const [socket, setSocket] = useState();
 
-  // useEffect(() => {
-  //   const newSocket = io('http://localhost:5000', { query: { id } });
-  //   // @ts-ignore
-  //   setSocket(newSocket);
+  useEffect(() => {
+    // A new Socket instance is returned for the namespace specified by the pathname in the URL, defaulting to /
+    const newSocket = io('http://localhost:5000', { query: { id } });
+    // @ts-ignore
+    setSocket(newSocket);
 
-  //   return () => newSocket.close();
-  // }, [id]);
+    return () => newSocket.close();
+  }, [id]);
 
   const value = { socket };
 

@@ -23,7 +23,7 @@ export const Conversations: FunctionComponent<{}> = () => {
 
   return (
     <ListGroup variant="flush">
-      {conversations.map((conversation) => (
+      {conversations?.map((conversation) => (
         <ListGroup.Item
           key={conversation.conversationId}
           action

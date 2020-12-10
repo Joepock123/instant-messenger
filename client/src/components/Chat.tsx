@@ -8,39 +8,23 @@ export const Chat: FunctionComponent<{ id: string; selectedConversationId: strin
   id,
 }) => {
   const [text, setText] = useState('');
-  const { conversations, setConversations } = useConversations();
+  const { sendMessage, getConversation } = useConversations();
   const setRef = useCallback((node) => {
     if (node) {
       node.scrollIntoView({ smooth: true });
     }
   }, []);
 
-  const selectedConversation = conversations.find(
-    (conversation) => conversation.conversationId === selectedConversationId,
-  );
+  const selectedConversation = getConversation(selectedConversationId);
   console.log('selectedConversation', selectedConversation);
-
-  const addMessageToConversation = ({ selectedConversationId, text, id }) => {
-    const newConversation = {
-      ...selectedConversation,
-      messages: [...selectedConversation?.messages, { senderId: id, text }],
-    };
-    // Need to remove the old conversation
-    const filteredConversations = conversations.filter(
-      (conversation) => conversation.conversationId !== selectedConversationId,
-    );
-    const updatedConversations = [...filteredConversations, newConversation];
-
-    setConversations(updatedConversations);
-  };
-
-  const handleSendMessage = ({ selectedConversationId, text, id }) => {
-    addMessageToConversation({ selectedConversationId, text, id });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleSendMessage({ selectedConversationId, text, id });
+    sendMessage({
+      selectedConversationId,
+      text,
+      senderId: id,
+    });
     setText('');
   };
 
@@ -85,7 +69,9 @@ export const Chat: FunctionComponent<{ id: string; selectedConversationId: strin
               style={{ height: '75px', resize: 'none' }}
             />
             <InputGroup.Append>
-              <Button type="submit">Send</Button>
+              <Button disabled={!getConversation} type="submit">
+                Send
+              </Button>
             </InputGroup.Append>
           </InputGroup>
         </Form.Group>

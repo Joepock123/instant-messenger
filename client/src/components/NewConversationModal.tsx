@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useState } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
-import { v4 as uuidV4 } from 'uuid';
 
 import { useContacts } from 'contexts/ContactsProvider';
 import { useConversations } from 'contexts/ConversationsProvider';
@@ -10,25 +9,7 @@ type Props = { closeModal: () => void };
 export const NewConversationModal: FunctionComponent<Props> = ({ closeModal }) => {
   const [selectedContactIds, setSelectedContactIds] = useState([]);
   const { contacts } = useContacts();
-
-  // @ts-ignore
-  const { conversations, setConversations } = useConversations();
-
-  const createRecipientsList = (selectedContactIds) => {
-    return selectedContactIds.map((selectedContactId) =>
-      contacts.find((contact) => contact.id === selectedContactId),
-    );
-  };
-
-  const createConversation = (selectedContactIds) => {
-    const recipientsList = createRecipientsList(selectedContactIds);
-    const conversationId = uuidV4();
-
-    setConversations([
-      ...conversations,
-      { conversationId: conversationId, recipients: recipientsList, messages: [] },
-    ]);
-  };
+  const { createConversation } = useConversations();
 
   const handleSubmit = (e) => {
     e.preventDefault();
